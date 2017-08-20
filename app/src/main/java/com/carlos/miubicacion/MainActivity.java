@@ -20,8 +20,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,OnMapReadyCallback {
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleMap mMap;
     SupportMapFragment mapFragment;
     private Location userLocation;
+    private ArrayList<Taco> tacoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
          mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        tacoList  = new ArrayList<>();
+        tacoList.add(new Taco(40.74,-73.9803,"Arrachera"));
+        tacoList.add(new Taco(40.749,-73.995308,"Cerdo"));
+        tacoList.add(new Taco(40.75,-73.9293,"Carne Asada"));
+        tacoList.add(new Taco(40.72,-73.9820,"Pollo"));
+
 
     }
 
@@ -131,9 +143,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+       BitmapDescriptor tacoMarkerIcon = BitmapDescriptorFactory.fromResource(R.drawable.common_full_open_on_phone);
+
         // Add a marker in Sydney and move the camera
-        LatLng UserCoordinates = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        //LatLng UserCoordinates = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        LatLng UserCoordinates = new LatLng(40.75, -73.9);
         mMap.addMarker(new MarkerOptions().position(UserCoordinates).title("User Locatión"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(UserCoordinates));
+
+        for (Taco  taco: tacoList) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(taco.getLatitude(), taco.getLongitude()))
+                    .title(taco.getFlavor())
+                    .icon(tacoMarkerIcon)
+            );
+
+        }
+
+       // mMap.moveCamera(CameraUpdateFactory.newLatLng(UserCoordinates));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(UserCoordinates,12));
     }
 }
